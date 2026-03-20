@@ -1,0 +1,4 @@
+xgboost>=1.7.0
+lightgbm>=3.3.0
+matplotlib>=3.5.0
+pandas>=1.4.0
