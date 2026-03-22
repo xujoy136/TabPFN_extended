@@ -22,7 +22,11 @@ print("=" * 70)
 
 # 1. 数据加载
 print("\n1. 加载数据...")
-data_path = Path('../../dataset/diabetes_dataset.csv')
+# 获取脚本所在目录，然后计算数据集路径
+script_dir = Path(__file__).parent
+project_root = script_dir.parent.parent
+data_path = project_root / 'dataset' / 'diabetes_dataset.csv'
+
 if not data_path.exists():
     print(f"✗ 数据文件未找到: {data_path}")
     exit(1)

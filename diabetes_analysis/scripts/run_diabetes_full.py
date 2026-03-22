@@ -98,7 +98,10 @@ def main():
     
     # 1. 数据加载
     print_section("1. 数据加载与预处理")
-    data_path = '../../dataset/diabetes_dataset.csv'
+    # 获取脚本所在目录，然后计算数据集路径
+    script_dir = Path(__file__).parent
+    project_root = script_dir.parent.parent
+    data_path = project_root / 'dataset' / 'diabetes_dataset.csv'
     df = pd.read_csv(data_path)
     print(f"数据集形状: {df.shape}")
     
@@ -115,7 +118,7 @@ def main():
     print_section("2. Benchmark 对比 (10种回归方法)")
     
     models = {
-        'TabPFN': TabPFNRegressor.create_default_for_version(ModelVersion.V2, n_estimators=4, device='cpu'),
+        'TabPFN': TabPFNRegressor.create_default_for_version(ModelVersion.V2, n_estimators=4, device='cuda'),
         'XGBoost': XGBRegressor(random_state=42, verbosity=0),
         'LightGBM': LGBMRegressor(random_state=42, verbose=-1),
         'RandomForest': RandomForestRegressor(n_estimators=100, random_state=42),
