@@ -328,6 +328,41 @@ jupyter notebook pregenant_analysis/notebooks/preganent_analysis.ipynb
 
 详细说明见 [pregenant_analysis/README.md](pregenant_analysis/README.md)。
 
+### Diabetes 回归分析 (Benchmark & SHAP Analysis)
+
+本项目包含 Diabetes 数据集的完整回归分析，对比 TabPFN 与其他 9 种回归模型。
+
+#### 目录结构
+
+```
+diabetes_analysis/
+├── scripts/                 # 可执行分析脚本
+│   ├── run_diabetes_full.py       # 完整回归分析（10种模型对比 + SHAP）
+│   └── run_diabetes_quicktest.py  # 环境测试
+├── results/                 # 分析结果输出（图表、数据）
+└── docs/                    # 项目文档
+```
+
+#### 功能特性
+
+- **多模型 Benchmark**: TabPFN Regressor、XGBoost、LightGBM、RandomForest、GradientBoosting、MLP、SVR、DecisionTree、LinearRegression、Ridge
+- **回归指标**: R²、RMSE、MAE、MSE
+- **SHAP 解释性分析**: 特征重要性、Summary Plot、Dependence Plot
+- **可视化**: 预测散点图、残差图、相关性热力图
+- **交叉验证**: 5-Fold CV
+
+#### 快速开始
+
+```bash
+# 完整回归分析
+python diabetes_analysis/scripts/run_diabetes_full.py
+
+# 环境测试
+python diabetes_analysis/scripts/run_diabetes_quicktest.py
+```
+
+详细说明见 [diabetes_analysis/README.md](diabetes_analysis/README.md)。
+
 ## License
 
 The TabPFN-2.5 model weights are licensed under a [non-commercial license](https://huggingface.co/Prior-Labs/tabpfn_2_5/blob/main/LICENSE). These are used by default.

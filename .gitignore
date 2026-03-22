@@ -185,6 +185,23 @@ pregenant_analysis/**/*.py[cod]
 pregenant_analysis/**/*$py.class
 
 # ============================================================================
+# Diabetes Analysis Project
+# ============================================================================
+
+# Generated results (keep directory, ignore contents)
+diabetes_analysis/results/*.png
+diabetes_analysis/results/*.csv
+diabetes_analysis/results/*.pdf
+diabetes_analysis/results/*.md
+!diabetes_analysis/results/.gitkeep
+
+# Jupyter Notebook checkpoints in diabetes_analysis
+diabetes_analysis/notebooks/.ipynb_checkpoints/
+diabetes_analysis/**/__pycache__/
+diabetes_analysis/**/*.py[cod]
+diabetes_analysis/**/*$py.class
+
+# ============================================================================
 # Benchmark Results
 # ============================================================================
 benchmarks/results/
