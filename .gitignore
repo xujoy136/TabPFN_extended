@@ -166,3 +166,52 @@ cython_debug/
 CLAUDE.md
 .claude
 uv.lock
+
+# ============================================================================
+# Pregenant Analysis Project
+# ============================================================================
+
+# Generated results (keep directory, ignore contents)
+pregenant_analysis/results/*.png
+pregenant_analysis/results/*.csv
+pregenant_analysis/results/*.pdf
+pregenant_analysis/results/*.md
+!pregenant_analysis/results/.gitkeep
+
+# Jupyter Notebook checkpoints in pregenant_analysis
+pregenant_analysis/notebooks/.ipynb_checkpoints/
+pregenant_analysis/**/__pycache__/
+pregenant_analysis/**/*.py[cod]
+pregenant_analysis/**/*$py.class
+
+# ============================================================================
+# Benchmark Results
+# ============================================================================
+benchmarks/results/
+benchmarks/**/results/
+benchmarks/**/*.png
+benchmarks/**/*.csv
+!benchmarks/**/tests/**/*.py
+
+# ============================================================================
+# Dataset (ignored - large data files)
+# ============================================================================
+# Ignore all data files
+dataset/*.csv
+dataset/*.npz
+dataset/*.npy
+dataset/*.pkl
+dataset/*.pkl.gz
+dataset/*.h5
+dataset/*.parquet
+
+# Keep these files (negate ignore)
+!dataset/.gitkeep
+!dataset/data_loader.py
+
+# ============================================================================
+# Logs
+# ============================================================================
+*.log
+shap_run.log
+benchmarks/**/*.log

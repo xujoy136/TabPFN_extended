@@ -278,6 +278,56 @@ graph LR
 
 ```
 
+## Project Examples
+
+### Pregenant 代谢组学数据分析 (Benchmark & SHAP Analysis)
+
+本项目包含一个完整的 TabPFN 应用案例，对 Pregenant 代谢组学数据进行 Benchmark 对比分析和 SHAP 解释性分析。
+
+#### 目录结构
+
+```
+pregenant_analysis/
+├── scripts/                 # 可执行分析脚本
+│   ├── run_preganent_full.py       # 完整分析（9种模型对比 + SHAP）
+│   ├── run_preganent_fast.py       # 快速分析（优化 SHAP 计算）
+│   └── run_preganent_quicktest.py  # 环境测试
+├── shap_modules/            # SHAP 解释性分析模块
+│   ├── shap_analysis.py            # 基础 SHAP 模块
+│   └── shap_analysis_v2.py         # 高级 SHAP 模块
+├── notebooks/               # Jupyter Notebook 交互分析
+├── results/                 # 分析结果输出（图表、数据）
+└── docs/                    # 项目文档
+```
+
+#### 功能特性
+
+- **多模型 Benchmark**: TabPFN、XGBoost、LightGBM、RandomForest、GradientBoosting、MLP、SVM、DecisionTree、LogisticRegression
+- **SHAP 解释性分析**: 
+  - 特征重要性排序 (Feature Importance)
+  - Beeswarm 图 (特征影响分布)
+  - Dependence 图 (特征依赖关系)
+- **交叉验证**: 5-Fold CV 评估
+- **可视化**: ROC 曲线、特征分布、相关性热力图
+
+#### 快速开始
+
+```bash
+# 完整分析
+python pregenant_analysis/scripts/run_preganent_full.py
+
+# 快速分析（减少 SHAP 计算时间）
+python pregenant_analysis/scripts/run_preganent_fast.py
+
+# 环境测试
+python pregenant_analysis/scripts/run_preganent_quicktest.py
+
+# Jupyter Notebook 交互分析
+jupyter notebook pregenant_analysis/notebooks/preganent_analysis.ipynb
+```
+
+详细说明见 [pregenant_analysis/README.md](pregenant_analysis/README.md)。
+
 ## License
 
 The TabPFN-2.5 model weights are licensed under a [non-commercial license](https://huggingface.co/Prior-Labs/tabpfn_2_5/blob/main/LICENSE). These are used by default.
