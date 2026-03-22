@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diabetes 数据集回归分析实验报告</title>
+<style>
+    @media print {
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", "SimHei", sans-serif;
+        font-size: 11pt;
+        line-height: 1.8;
+        color: #333;
+        max-width: 210mm;
+        margin: 0 auto;
+        padding: 20mm;
+    }
+    
+    h1 {
+        font-size: 22pt;
+        color: #1a237e;
+        text-align: center;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+    }
+    
+    h2 {
+        font-size: 16pt;
+        color: #283593;
+        border-bottom: 2px solid #9fa8da;
+        padding-bottom: 8px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+    
+    h3 {
+        font-size: 13pt;
+        color: #3949ab;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    p {
+        text-align: justify;
+        margin: 10px 0;
+        text-indent: 2em;
+    }
+    
+    .no-indent {
+        text-indent: 0;
+    }
+    
+    strong {
+        color: #1a237e;
+        font-weight: bold;
+    }
+    
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 20px auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .figure-caption {
+        text-align: center;
+        font-size: 10pt;
+        color: #666;
+        margin-top: -15px;
+        margin-bottom: 20px;
+    }
+    
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 15px 0;
+        font-size: 10pt;
+    }
+    
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px 12px;
+        text-align: left;
+    }
+    
+    th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+    
+    ul, ol {
+        margin: 10px 0;
+        padding-left: 30px;
+    }
+    
+    li {
+        margin: 5px 0;
+    }
+    
+    .highlight-box {
+        background-color: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px 20px;
+        margin: 20px 0;
+    }
+    
+    .results-summary {
+        background-color: #f5f5f5;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+    
+    .metric {
+        display: inline-block;
+        margin: 5px 15px;
+        padding: 5px 10px;
+        background-color: #fff;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+</style>
+</head>
+<body>
+
+<h1>Diabetes 数据集回归分析实验报告</h1>
+
+<h2>摘要</h2>
+
+<p>本研究对 Diabetes 数据集进行了系统的回归分析，对比了 TabPFN 与其他 9 种经典机器学习回归模型的性能。Diabetes 数据集包含 442 名糖尿病患者的 10 项生理指标，目标是预测一年后疾病进展的定量指标。</p>
+
+<p>实验结果表明，<strong>TabPFN 在该回归任务上取得了最佳性能(R²=0.507)</strong>，显著优于传统机器学习方法。基于 SHAP 解释性分析，本研究识别出 BMI、s5(对数血清甘油三酯水平)和血压是影响糖尿病进展的关键生理指标。</p>
+
+<div class="results-summary">
+    <h3 style="margin-top: 0;">主要结果</h3>
+    <p class="no-indent"><strong>Top 5 模型 (按 R² 排序):</strong></p>
+    <table>
+        <tr><th>排名</th><th>模型</th><th>R² Score</th><th>RMSE</th></tr>
+        <tr><td>1</td><td>TabPFN ⭐</td><td>0.507</td><td>51.60</td></tr>
+        <tr><td>2</td><td>LinearRegression</td><td>0.477</td><td>53.12</td></tr>
+        <tr><td>3</td><td>RandomForest</td><td>0.470</td><td>53.48</td></tr>
+        <tr><td>4</td><td>GradientBoosting</td><td>0.431</td><td>55.42</td></tr>
+        <tr><td>5</td><td>Ridge</td><td>0.423</td><td>55.79</td></tr>
+    </table>
+</div>
+
+<div class="page-break"></div>
+
+<h2>1. 方法对比</h2>
+
+<h3>1.1 数据集介绍</h3>
+
+<p>Diabetes 数据集来源于 sklearn.datasets，包含 442 个样本，每个样本有 10 个生理特征和 1 个连续型目标变量。目标变量表示一年后疾病进展的定量测量值(范围: 25-346)。数据集特征包括：</p>
+
+<ul>
+    <li><strong>age</strong>: 年龄</li>
+    <li><strong>sex</strong>: 性别</li>
+    <li><strong>bmi</strong>: 体质指数(Body Mass Index)</li>
+    <li><strong>bp</strong>: 平均血压</li>
+    <li><strong>s1-s6</strong>: 6个血清测量指标
+        <ul>
+            <li>s1: 总血清胆固醇(TC)</li>
+            <li>s2: 低密度脂蛋白(LDL)</li>
+            <li>s3: 高密度脂蛋白(HDL)</li>
+            <li>s4: 总胆固醇与HDL的比值(TC/HDL)</li>
+            <li>s5: 对数血清甘油三酯水平(log(TG))</li>
+            <li>s6: 血糖水平</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>1.2 测试集回归性能对比</h3>
+
+<p>本研究对比了10种机器学习方法在糖尿病数据集上的回归性能，包括 TabPFN、XGBoost、LightGBM、RandomForest、GradientBoosting、MLP、SVR、DecisionTree、LinearRegression 和 Ridge。实验采用 70/30 的训练集/测试集划分，使用 R² Score(决定系数)、RMSE(均方根误差)、MAE(平均绝对误差)和 MSE(均方误差)进行综合评估。</p>
+
+<img src="../results/diabetes_benchmark_comparison.png" alt="Benchmark 对比图">
+<p class="figure-caption">图1: 10种模型在4项核心指标上的性能对比</p>
+
+<p><strong>图1</strong>展示了10种模型在4项核心指标上的性能对比。从 R² Score 来看，<strong>TabPFN 取得了最高得分 0.507</strong>，紧随其后的是 LinearRegression(0.477)和 RandomForest(0.470)。值得注意的是，TabPFN 作为无需微调的 Foundation Model，在回归任务上展现出优于传统机器学习方法的性能。</p>
+
+<div class="page-break"></div>
+
+<img src="../results/diabetes_prediction_scatter.png" alt="预测散点图">
+<p class="figure-caption">图2: 各模型的预测值 vs 真实值散点图</p>
+
+<p><strong>图2</strong>为各模型的预测值 vs 真实值散点图。理想情况下，所有点应落在红色对角线上。从图中可以直观看出，TabPFN 的散点分布最接近对角线，表明其预测精度最高。</p>
+
+<div class="page-break"></div>
+
+<img src="../results/diabetes_residual_plots.png" alt="残差图">
+<p class="figure-caption">图3: 各模型的残差分布图</p>
+
+<p><strong>图3</strong>展示了各模型的残差分布图。TabPFN 的残差分布相对均匀地分布在0线两侧，表明模型没有明显的系统性偏差。</p>
+
+<div class="page-break"></div>
+
+<h2>2. 特征重要性分析</h2>
+
+<h3>2.1 SHAP 特征重要性</h3>
+
+<p>为揭示影响糖尿病进展的关键生理指标，本研究基于 TabPFN 模型采用 SHAP(Shapley Additive exPlanations)方法计算了各特征的重要性。</p>
+
+<img src="../results/diabetes_shap_bar.png" alt="SHAP Bar 图">
+<p class="figure-caption">图4: 特征重要性排名 (Mean |SHAP|)</p>
+
+<p><strong>图4</strong>展示了各特征的 SHAP 均值绝对值排名。<strong>BMI(体质指数)</strong>以 24.70 的重要性得分位居首位，是影响糖尿病进展的最关键因素。<strong>s5(对数血清甘油三酯水平)</strong>排名第二，重要性值为 18.64。<strong>bp(平均血压)</strong>以 13.71 的重要性值排名第三。</p>
+
+<div class="page-break"></div>
+
+<img src="../results/diabetes_shap_summary.png" alt="SHAP Summary 图">
+<p class="figure-caption">图5: SHAP Summary (Beeswarm) 图</p>
+
+<p><strong>图5</strong>为 SHAP Summary(Beeswarm)图，展示了各特征 SHAP 值的分布情况。颜色表示特征值的高低(红色为高，蓝色为低)。</p>
+
+<div class="page-break"></div>
+
+<img src="../results/diabetes_shap_dependence.png" alt="SHAP Dependence 图">
+<p class="figure-caption">图6: Top 2 重要特征的 SHAP 依赖关系图</p>
+
+<p><strong>图6</strong>展示了 Top 2 重要特征(BMI 和 s5)的 SHAP 依赖关系图。随着 BMI 的增加，SHAP 值呈现明显的上升趋势，表明较高的 BMI 与更高的疾病进展风险呈正相关。</p>
+
+<div class="page-break"></div>
+
+<h3>2.2 特征相关性分析</h3>
+
+<img src="../results/diabetes_correlation_heatmap.png" alt="特征相关性热力图">
+<p class="figure-caption">图7: 特征相关性矩阵热力图</p>
+
+<p><strong>图7</strong>展示了 10 个特征之间的相关性矩阵。s1(总胆固醇)与 s2(LDL)高度正相关(0.90)，这符合生物学常识，因为 LDL 是总胆固醇的主要组成部分。</p>
+
+<div class="page-break"></div>
+
+<h2>3. 生理学意义解读</h2>
+
+<div class="highlight-box">
+    <h3 style="margin-top: 0;">关键发现</h3>
+    <p class="no-indent">基于 SHAP 分析，影响糖尿病进展的三大关键生理指标：</p>
+    <ol>
+        <li><strong>BMI (体质指数)</strong> - 肥胖是 2 型糖尿病最重要的危险因素</li>
+        <li><strong>s5 (血清甘油三酯)</strong> - 与胰岛素抵抗密切相关</li>
+        <li><strong>血压</strong> - 高血压与糖尿病常常共存，相互促进</li>
+    </ol>
+</div>
+
+<h3>3.1 BMI (体质指数)</h3>
+<p>BMI 是评估肥胖程度的核心指标。肥胖导致胰岛素抵抗，使机体对胰岛素的敏感性下降。减重是预防和延缓糖尿病进展的有效干预措施。</p>
+
+<h3>3.2 s5 (血清甘油三酯)</h3>
+<p>血清甘油三酯是血脂代谢的重要指标。甘油三酯水平升高与胰岛素抵抗密切相关，血脂异常与糖尿病相互促进，形成恶性循环。</p>
+
+<h3>3.3 血压</h3>
+<p>高血压与糖尿病常常共存(称为"代谢综合征")，两者相互促进，形成恶性循环。严格控制血压(目标 &lt;130/80 mmHg)是糖尿病管理的重要环节。</p>
+
+<h2>4. 结论</h2>
+
+<p>本研究对 Diabetes 数据集进行了系统的回归分析和 SHAP 解释性分析，主要得出以下结论：</p>
+
+<ol>
+    <li><strong>模型性能方面</strong>：在10种机器学习方法的对比中，TabPFN 取得了最佳的回归性能(R²=0.507，RMSE=51.60)，显著优于 LinearRegression(R²=0.477)和 RandomForest(R²=0.470)。</li>
+    <li><strong>特征重要性方面</strong>：SHAP 分析识别出 BMI、血清甘油三酯和血压是影响糖尿病进展的三大关键生理指标，与医学共识高度一致。</li>
+    <li><strong>预测可靠性方面</strong>：TabPFN 的残差分布均匀且无明显模式，预测散点图显示预测值最接近真实值，具有较高的临床应用潜力。</li>
+</ol>
+
+<div class="highlight-box">
+    <p class="no-indent"><strong>未来研究方向：</strong>扩大样本规模、纳入更多特征(如生活方式因素)、采用纵向研究设计、开发临床决策支持工具。</p>
+</div>
+
+<hr style="margin-top: 40px;">
+<p style="text-align: center; color: #666; font-size: 10pt;">
+    Diabetes 数据集回归分析实验报告 | 生成日期: 2025年3月
+</p>
+
+</body>
+</html>
